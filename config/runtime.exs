@@ -1,4 +1,7 @@
 import Config
+import Dotenvy
+
+source!(["#{config_env()}.env", System.get_env()])
 
 # config/runtime.exs is executed for all environments, including
 # during releases. It is executed after compilation and before the
@@ -18,6 +21,33 @@ import Config
 # script that automatically sets the env var above.
 if System.get_env("PHX_SERVER") do
   config :octos_challenge, OctosChallengeWeb.Endpoint, server: true
+end
+
+if config_env() in [:dev, :test] do
+  database =
+    if config_env() == :dev,
+      do: "octos_challenge_dev",
+      else: "octos_challenge_test#{System.get_env("MIX_TEST_PARTITION")}"
+
+  config :octos_challenge, OctosChallenge.Repo,
+    database: env!("DB_DATABASE", :string, database),
+    username: env!("DB_USER", :string, "postgres"),
+    password: env!("DB_PASS", :string, "secret"),
+    hostname: env!("DB_HOST", :string, "localhost"),
+    pool_size: env!("POOL_SIZE", :integer, 10)
+
+  if config_env() == :dev do
+    config :octos_challenge, OctosChallenge.Repo,
+      stacktrace: true,
+      show_sensitive_data_on_connection_error: true,
+      pool_size: 10
+  end
+
+  if config_env() == :test do
+    config :octos_challenge, OctosChallenge.Repo,
+      pool: Ecto.Adapters.SQL.Sandbox,
+      pool_size: System.schedulers_online() * 2
+  end
 end
 
 if config_env() == :prod do
