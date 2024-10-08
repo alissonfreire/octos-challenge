@@ -46,7 +46,8 @@ defmodule OctosChallenge.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:dotenvy, "~> 0.8.0"},
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:ex_machina, "~> 2.7.0", only: :test}
     ]
   end
 
