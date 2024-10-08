@@ -53,7 +53,7 @@ defmodule OctosChallengeWeb.CameraControllerTest do
     test "GET /cameras should return logged out users with all cameras disabled", %{conn: conn} do
       Factory.insert_list(3, :user, %{disconnected_at: NaiveDateTime.utc_now()})
       |> Enum.each(fn user ->
-          Factory.insert(:camera, %{user: user, is_active: false})
+        Factory.insert(:camera, %{user: user, is_active: false})
       end)
 
       resp = conn |> get("/cameras") |> json_response(200)
@@ -64,7 +64,7 @@ defmodule OctosChallengeWeb.CameraControllerTest do
 
       Enum.each(users, fn user ->
         assert user["name"] =~ "user-"
-        assert Enum.count(user["cameras"]) == 0
+        assert Enum.empty?(user["cameras"])
         refute is_nil(user["disconnected_at"])
       end)
     end
