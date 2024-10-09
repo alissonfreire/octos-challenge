@@ -7,6 +7,8 @@ config :octos_challenge, OctosChallengeWeb.Endpoint,
   secret_key_base: "JJuUKfVWtDyOv10Zf+e0uGbegUOu6SXfi7cILKJwgGYfi703Fvuk+uwMbT+BPHP1",
   server: false
 
+config :octos_challenge, Oban, testing: :manual
+
 # In test we don't send emails
 config :octos_challenge, OctosChallenge.Mailer, adapter: Swoosh.Adapters.Test
 

@@ -37,7 +37,9 @@ defmodule OctosChallenge.MixProject do
       {:ecto_sql, "~> 3.10"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_live_dashboard, "~> 0.8.3"},
+      {:phoenix_html, "~> 4.0"},
       {:swoosh, "~> 1.5"},
+      {:phoenix_swoosh, "~> 1.0"},
       {:finch, "~> 0.13"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
@@ -46,6 +48,7 @@ defmodule OctosChallenge.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:dotenvy, "~> 0.8.0"},
+      {:oban, "~> 2.17"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:ex_machina, "~> 2.7.0", only: :test}
     ]

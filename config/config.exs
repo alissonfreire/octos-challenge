@@ -22,6 +22,14 @@ config :octos_challenge, OctosChallengeWeb.Endpoint,
   pubsub_server: OctosChallenge.PubSub,
   live_view: [signing_salt: "IkKj81Fo"]
 
+config :octos_challenge, Oban,
+  engine: Oban.Engines.Basic,
+  queues: [
+    default: 1,
+    notify_users: 1
+  ],
+  repo: OctosChallenge.Repo
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails

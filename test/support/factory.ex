@@ -23,7 +23,7 @@ defmodule OctosChallenge.Factory do
   end
 
   def camera_factory(attrs \\ %{}) do
-    brand = Enum.random(@brand_names)
+    brand = Map.get(attrs, :brand, Enum.random(@brand_names))
 
     %Camera{
       name: Map.get(attrs, :name, sequence("camera-#{brand}-")),

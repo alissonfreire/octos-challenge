@@ -17,6 +17,7 @@ defmodule OctosChallenge.Application do
       # Start a worker by calling: OctosChallenge.Worker.start_link(arg)
       # {OctosChallenge.Worker, arg},
       # Start to serve requests, typically the last entry
+      {Oban, Application.fetch_env!(:octos_challenge, Oban)},
       OctosChallengeWeb.Endpoint
     ]
 
