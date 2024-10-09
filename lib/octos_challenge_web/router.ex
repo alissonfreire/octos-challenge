@@ -15,6 +15,12 @@ defmodule OctosChallengeWeb.Router do
     get "/", CameraController, :index
   end
 
+  scope "/notify-users", OctosChallengeWeb do
+    pipe_through :api
+
+    post "/", NotifyController, :index
+  end
+
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:octos_challenge, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put
