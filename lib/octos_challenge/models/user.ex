@@ -7,7 +7,7 @@ defmodule OctosChallenge.Models.User do
 
   @type t :: %__MODULE__{}
 
-  @fields ~w(name disconnected_at)a
+  @fields ~w(name email disconnected_at)a
   @required_fields ~w(name email)a
 
   @derive {Jason.Encoder, only: [:name, :email, :disconnected_at, :cameras]}
@@ -18,6 +18,7 @@ defmodule OctosChallenge.Models.User do
     field :disconnected_at, :utc_datetime
 
     has_many :cameras, Camera
+
     timestamps()
   end
 
