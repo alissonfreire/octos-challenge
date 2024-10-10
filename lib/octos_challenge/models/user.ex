@@ -15,7 +15,7 @@ defmodule OctosChallenge.Models.User do
   schema "users" do
     field :name, :string
     field :email, :string
-    field :disconnected_at, :utc_datetime
+    field :disconnected_at, :naive_datetime
 
     has_many :cameras, Camera
 

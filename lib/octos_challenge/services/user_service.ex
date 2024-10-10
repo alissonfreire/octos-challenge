@@ -1,6 +1,10 @@
 defmodule OctosChallenge.UserService do
-  @moduledoc false
+  @moduledoc """
+  Module responsible for performing operations on camera users such as
+  searching and inserting into the database
+  """
 
+  alias OctosChallenge.Models.Camera
   alias OctosChallenge.Models.User
   alias OctosChallenge.Repo
 
@@ -40,4 +44,59 @@ defmodule OctosChallenge.UserService do
   end
 
   defp apply_query_params(queryable, _params), do: queryable
+
+  @spec create_user(params :: map()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
+  def create_user(params) do
+    params
+    |> User.changeset()
+    |> Repo.insert()
+  end
+
+  @spec create_many_users(list_params :: [map()], with_cameras :: boolean()) :: :ok
+  def create_many_users(list_params, with_cameras)
+
+  def create_many_users(list_params, false = _with_cameras) do
+    do_create_many_users(list_params)
+  end
+
+  def create_many_users(list_params, true = _with_cameras) do
+    {users, cameras} =
+      Enum.reduce(list_params, {[], %{}}, fn user, {users, cameras} ->
+        {
+          [Map.delete(user, :cameras)] ++ users,
+          Map.update(cameras, user.name, %{name: user.name, cameras: user.cameras}, fn old ->
+            Map.put(old, :cameras, old.cameras ++ user.cameras)
+          end)
+        }
+      end)
+
+    Repo.transaction(fn ->
+      do_create_many_users(users)
+
+      user_names = Map.keys(cameras)
+
+      created_users =
+        from(u in User, where: u.name in ^user_names, select: {u.name, u.id})
+        |> Repo.all()
+
+      Enum.reduce(created_users, [], fn {user_name, user_id}, acc ->
+        all_cameras_with_user_ids =
+          cameras
+          |> Map.get(user_name)
+          |> Map.get(:cameras)
+          |> Enum.map(&Map.put(&1, :user_id, user_id))
+
+        all_cameras_with_user_ids ++ acc
+      end)
+      |> then(&Repo.insert_all(Camera, &1))
+    end)
+
+    :ok
+  end
+
+  defp do_create_many_users(list_params) do
+    Repo.insert_all(User, list_params)
+
+    :ok
+  end
 end
