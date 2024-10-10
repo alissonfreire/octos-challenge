@@ -5,8 +5,8 @@ defmodule OctosChallengeWeb.CameraController do
   alias OctosChallenge.UserService
 
   def index(conn, params) do
-    users = UserService.get_all_users(params)
+    data = UserService.get_all_users(params)
 
-    render(conn, :index, users: users)
+    render(conn, :index, data: data)
   end
 end
