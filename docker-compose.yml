@@ -1,4 +1,22 @@
 services:
+  app:
+    build:
+      context: .
+    container_name: app
+    environment:
+      DB_USER: postgres
+      DB_PASS: secret
+    command:
+      - ./entrypoint.sh
+    volumes:
+      - .:/app
+    ports:
+      - 4000:4000
+    networks:
+      - backend
+    depends_on:
+      - postgres
+
   postgres:
     image: postgres:latest
     container_name: postgres
