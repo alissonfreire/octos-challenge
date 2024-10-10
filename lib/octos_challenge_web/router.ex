@@ -22,7 +22,9 @@ defmodule OctosChallengeWeb.Router do
   end
 
   scope "/swagger" do
-    forward "/", PhoenixSwagger.Plug.SwaggerUI, otp_app: :octos_challenge, swagger_file: "swagger.json"
+    forward "/", PhoenixSwagger.Plug.SwaggerUI,
+      otp_app: :octos_challenge,
+      swagger_file: "swagger.json"
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

@@ -8,7 +8,6 @@ defmodule OctosChallengeWeb.NotifyController do
 
   @default_camera_brand "Hikvision"
 
-
   swagger_path :index do
     post("/notify-users")
     summary("Notify all users")
@@ -20,6 +19,7 @@ defmodule OctosChallengeWeb.NotifyController do
 
     response(204, "")
   end
+
   def index(conn, params) do
     camera_brand = Map.get(params, "camera_brand", @default_camera_brand)
 

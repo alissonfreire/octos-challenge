@@ -136,7 +136,10 @@ defmodule OctosChallengeWeb.CameraControllerTest do
         Factory.insert(:camera, %{user: user, name: "Camera - #{idx}"})
       end)
 
-      resp = conn |> get("/cameras", %{"paginate" => true, "per_page" => 3, "order_by" => "ASC"}) |> json_response(200)
+      resp =
+        conn
+        |> get("/cameras", %{"paginate" => true, "per_page" => 3, "order_by" => "ASC"})
+        |> json_response(200)
 
       assert %{"meta" => %{"per_page" => 3, "page" => 1, "total" => 6, "total_pages" => 2}} = resp
       assert %{"data" => [asc_user_1, asc_user_2, asc_user_3]} = resp
@@ -150,7 +153,15 @@ defmodule OctosChallengeWeb.CameraControllerTest do
       assert asc_user_3["name"] == "User - 3"
       assert get_in(asc_user_3, ["cameras", Access.at(0), "name"]) == "Camera - 3"
 
-      resp = conn |> get("/cameras", %{"paginate" => true, "page" => 2, "per_page" => 3, "order_by" => "ASC"}) |> json_response(200)
+      resp =
+        conn
+        |> get("/cameras", %{
+          "paginate" => true,
+          "page" => 2,
+          "per_page" => 3,
+          "order_by" => "ASC"
+        })
+        |> json_response(200)
 
       assert %{"meta" => %{"per_page" => 3, "page" => 2, "total" => 6, "total_pages" => 2}} = resp
       assert %{"data" => [asc_user_4, asc_user_5, asc_user_6]} = resp
