@@ -21,7 +21,14 @@ done
 
 # Setup project dependencies and database
 mix deps.get
-mix ecto.setup
+
+# Create, migrate, and seed database if it doesn't exist.
+HAS_DATABASE=`PGPASSWORD=$DB_PASS psql -U $DB_USER -h $DB_HOST -XtAc "SELECT 'ok' FROM pg_database WHERE datname='$DB_DATABASE'"`
+if [ "$HAS_DATABASE" != "ok" ]; then
+  echo "Database $DB_DATABASE does not exist. Creating..."
+  mix ecto.setup
+  echo "Database $DB_DATABASE created."
+fi
 
 # Long live command
 mix phx.server
