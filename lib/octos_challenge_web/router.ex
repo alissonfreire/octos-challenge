@@ -21,6 +21,12 @@ defmodule OctosChallengeWeb.Router do
     post "/", NotifyController, :index
   end
 
+  scope "/swagger" do
+    forward "/", PhoenixSwagger.Plug.SwaggerUI,
+      otp_app: :octos_challenge,
+      swagger_file: "swagger.json"
+  end
+
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:octos_challenge, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put
@@ -36,5 +42,14 @@ defmodule OctosChallengeWeb.Router do
       live_dashboard "/dashboard", metrics: OctosChallengeWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
+  end
+
+  def swagger_info do
+    %{
+      info: %{
+        version: "1.0",
+        title: "Octos Challenge"
+      }
+    }
   end
 end

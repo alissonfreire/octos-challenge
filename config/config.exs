@@ -22,6 +22,15 @@ config :octos_challenge, OctosChallengeWeb.Endpoint,
   pubsub_server: OctosChallenge.PubSub,
   live_view: [signing_salt: "IkKj81Fo"]
 
+config :octos_challenge, :phoenix_swagger,
+  json_library: Jason,
+  swagger_files: %{
+    "priv/static/swagger.json" => [
+      router: OctosChallengeWeb.Router,
+      endpoint: OctosChallengeWeb.Endpoint
+    ]
+  }
+
 config :octos_challenge, Oban,
   engine: Oban.Engines.Basic,
   queues: [

@@ -49,6 +49,9 @@ defmodule OctosChallenge.MixProject do
       {:bandit, "~> 1.5"},
       {:dotenvy, "~> 0.8.0"},
       {:oban, "~> 2.17"},
+      {:phoenix_swagger, "~> 0.8"},
+      {:ex_json_schema, "~> 0.5"},
+      {:poison, "~> 3.0"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:ex_machina, "~> 2.7.0", only: :test}
     ]
