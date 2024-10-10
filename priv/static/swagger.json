@@ -1,0 +1,245 @@
+{
+  "swagger": "2.0",
+  "paths": {
+    "/notify-users": {
+      "post": {
+        "tags": [
+          "Notify"
+        ],
+        "summary": "Notify all users",
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "parameters": [
+          {
+            "x-example": "Hikvision",
+            "type": "string",
+            "required": false,
+            "name": "camera_brand",
+            "in": "query",
+            "description": "Camera brand"
+          }
+        ],
+        "operationId": "OctosChallengeWeb.NotifyController.index",
+        "description": "Notify all users who have cameras with the provided brand"
+      }
+    },
+    "/cameras": {
+      "get": {
+        "tags": [
+          "Camera"
+        ],
+        "summary": "List all users",
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/DataPaginated"
+            },
+            "description": "Ok"
+          }
+        },
+        "parameters": [
+          {
+            "x-example": "John - 1 Hikvision - 1",
+            "type": "string",
+            "required": false,
+            "name": "camera_name",
+            "in": "query",
+            "description": "Camera name"
+          },
+          {
+            "x-example": "Hikvision",
+            "type": "string",
+            "required": false,
+            "name": "camera_brand",
+            "in": "query",
+            "description": "Camera brand"
+          },
+          {
+            "x-example": "ASC",
+            "type": "string",
+            "required": false,
+            "name": "order_by",
+            "in": "query",
+            "description": "Order by camera name"
+          },
+          {
+            "x-example": true,
+            "type": "boolean",
+            "required": false,
+            "name": "paginate",
+            "in": "query",
+            "description": "Whether to return paged users or not"
+          },
+          {
+            "x-example": true,
+            "type": "integer",
+            "required": false,
+            "name": "per_page",
+            "in": "query",
+            "description": "number of items per pages"
+          },
+          {
+            "x-example": true,
+            "type": "integer",
+            "required": false,
+            "name": "page",
+            "in": "query",
+            "description": "Pager number"
+          }
+        ],
+        "operationId": "OctosChallengeWeb.CameraController.index",
+        "description": "List all users with all cameras enabled"
+      }
+    }
+  },
+  "definitions": {
+    "DataPaginated": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "type": "object",
+          "properties": {
+            "total_pages": {
+              "type": "integer",
+              "description": "Number total of pages"
+            },
+            "total": {
+              "type": "integer",
+              "description": "Number total of items"
+            },
+            "per_page": {
+              "type": "integer",
+              "description": "Number of items per page"
+            },
+            "page": {
+              "type": "integer",
+              "description": "Number of page"
+            }
+          },
+          "example": {
+            "total_pages": 6,
+            "total": 100,
+            "per_page": 15,
+            "page": 1
+          }
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/User"
+          }
+        }
+      }
+    },
+    "User": {
+      "type": "object",
+      "title": "User",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "updated_at": {
+          "type": "string",
+          "format": "ISO-8601",
+          "description": "When was the user last updated"
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of user"
+        },
+        "inserted_at": {
+          "type": "string",
+          "format": "ISO-8601",
+          "description": "When was the user initially inserted"
+        },
+        "id": {
+          "type": "string",
+          "description": "The ID of the user"
+        },
+        "disconnected_at": {
+          "type": "string",
+          "format": "ISO-8601",
+          "description": "When was the is disconnected"
+        },
+        "cameras": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Camera"
+          }
+        }
+      },
+      "example": {
+        "updated_at": "2017-03-21T14:00:00Z",
+        "name": "John",
+        "inserted_at": "2017-03-21T14:00:00Z",
+        "id": 1,
+        "disconnected_at": "2017-03-21T14:00:00Z",
+        "cameras": [
+          {
+            "updated_at": "2017-03-21T14:00:00Z",
+            "name": "John Hikvision - 1",
+            "is_active": true,
+            "inserted_at": "2017-03-21T14:00:00Z",
+            "id": 1,
+            "brand": "Hikvision"
+          }
+        ]
+      },
+      "description": "A normal user"
+    },
+    "Camera": {
+      "type": "object",
+      "title": "Camera",
+      "required": [
+        "is_active",
+        "brand",
+        "name"
+      ],
+      "properties": {
+        "updated_at": {
+          "type": "string",
+          "format": "ISO-8601",
+          "description": "When was the camera last updated"
+        },
+        "name": {
+          "type": "string",
+          "description": "The camera name"
+        },
+        "is_active": {
+          "type": "boolean",
+          "description": "The camera status"
+        },
+        "inserted_at": {
+          "type": "string",
+          "format": "ISO-8601",
+          "description": "When was the camera initially inserted"
+        },
+        "id": {
+          "type": "string",
+          "description": "The ID of the camera"
+        },
+        "brand": {
+          "type": "string",
+          "description": "The camera brand"
+        }
+      },
+      "example": {
+        "updated_at": "2017-03-21T14:00:00Z",
+        "name": "John Hikvision - 1",
+        "is_active": true,
+        "inserted_at": "2017-03-21T14:00:00Z",
+        "id": 1,
+        "brand": "Hikvision"
+      },
+      "description": "A user's camera"
+    }
+  },
+  "host": "localhost:4000",
+  "info": {
+    "title": "Octos Challenge",
+    "version": "1.0"
+  }
+}
