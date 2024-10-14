@@ -9,8 +9,8 @@ defmodule OctosChallenge.Users.CreateUser do
   """
 
   alias OctosChallenge.Repo
-  alias OctosChallenge.Users.User
   alias OctosChallenge.Users.Camera
+  alias OctosChallenge.Users.User
 
   import Ecto.Query
 
@@ -117,7 +117,6 @@ defmodule OctosChallenge.Users.CreateUser do
       {:error, error} -> error
       {num_rows, _} -> {:ok, num_rows}
     end
-
   rescue
     error -> {:error, error}
   end

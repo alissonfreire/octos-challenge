@@ -199,7 +199,7 @@ defmodule OctosChallenge.UsersTest do
       now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
 
       users = [
-        %{name: nil, email: "user1@email.com", inserted_at: now, updated_at: now},
+        %{name: nil, email: "user1@email.com", inserted_at: now, updated_at: now}
       ]
 
       assert {:error, _error} = Users.create_many_users(users)

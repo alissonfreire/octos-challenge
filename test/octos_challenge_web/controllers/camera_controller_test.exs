@@ -89,7 +89,7 @@ defmodule OctosChallengeWeb.CameraControllerTest do
 
       assert Enum.count(users) == 2
 
-      refute Enum.any?(users, & &1["name"] == user_2.name)
+      refute Enum.any?(users, &(&1["name"] == user_2.name))
 
       Enum.each(users, fn user ->
         assert user["name"] =~ "user-"
