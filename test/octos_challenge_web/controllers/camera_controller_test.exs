@@ -70,8 +70,9 @@ defmodule OctosChallengeWeb.CameraControllerTest do
     end
 
     test "GET /cameras should return only filtered cameras", %{conn: conn} do
-      Factory.insert_list(3, :user)
-      |> Enum.each(fn user ->
+      [user_1, user_2, user_3] = Factory.insert_list(3, :user)
+
+      Enum.each([user_1, user_3], fn user ->
         Enum.each(1..3, fn idx ->
           name =
             if idx == 3,
@@ -86,7 +87,9 @@ defmodule OctosChallengeWeb.CameraControllerTest do
 
       assert %{"data" => [_ | _] = users} = resp
 
-      assert Enum.count(users) == 3
+      assert Enum.count(users) == 2
+
+      refute Enum.any?(users, &(&1["name"] == user_2.name))
 
       Enum.each(users, fn user ->
         assert user["name"] =~ "user-"

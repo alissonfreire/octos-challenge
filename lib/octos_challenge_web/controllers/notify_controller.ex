@@ -4,7 +4,7 @@ defmodule OctosChallengeWeb.NotifyController do
 
   use PhoenixSwagger
 
-  alias OctosChallenge.NotifyUserWorker
+  alias OctosChallenge.Notify
 
   @default_camera_brand "Hikvision"
 
@@ -23,7 +23,7 @@ defmodule OctosChallengeWeb.NotifyController do
   def index(conn, params) do
     camera_brand = Map.get(params, "camera_brand", @default_camera_brand)
 
-    NotifyUserWorker.new(%{camera_brand: camera_brand}) |> Oban.insert!()
+    Notify.enqueue_all_jobs(%{camera_brand: camera_brand})
 
     send_resp(conn, :no_content, "")
   end

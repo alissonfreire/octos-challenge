@@ -4,7 +4,7 @@ defmodule OctosChallengeWeb.CameraController do
 
   use PhoenixSwagger
 
-  alias OctosChallenge.UserService
+  alias OctosChallenge.Users
 
   swagger_path :index do
     get("/cameras")
@@ -33,7 +33,10 @@ defmodule OctosChallengeWeb.CameraController do
   end
 
   def index(conn, params) do
-    data = UserService.get_all_users(params)
+    data =
+      params
+      |> Map.put("with_cameras", true)
+      |> Users.get_all_users()
 
     render(conn, :index, data: data)
   end

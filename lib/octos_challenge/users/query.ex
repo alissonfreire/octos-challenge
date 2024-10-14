@@ -1,26 +1,54 @@
-defmodule OctosChallenge.UserService do
+defmodule OctosChallenge.Users.Query do
   @moduledoc """
-  Module responsible for performing operations on camera users such as
-  searching and inserting into the database
+  Provides functions for querying user data from the database.
   """
 
-  alias OctosChallenge.Models.Camera
-  alias OctosChallenge.Models.User
   alias OctosChallenge.Repo
+  alias OctosChallenge.Users.User
 
   import Ecto.Query
 
-  @type data() :: %{
+  @type result() :: %{
           meta: %{
             per_page: integer(),
             page: integer(),
             total: integer(),
             total_pages: integer()
           },
-          data: [User.t()]
+          data: [User.t() | map()]
         }
 
-  @spec get_all_users(params :: map()) :: [User.t()] | data()
+  @doc """
+  Retrieves users based on the given filter parameters.
+
+  ## Params
+    - `params`: A keyword list of parameters to filter the users.
+      - `:paginate`: If true, returns a paginated result, default is false.
+      - `:per_page`: Quantity of items per page, default is 15 (valid only if paginate is true).
+      - `:page`: The page number, default is 1 (valid only if paginate is true).
+      - `:camera_name`: Returns only users who have cameras that the name matches.
+      - `:camera_brand`: Returns only users who have cameras that the brand matches.
+      - `:order_by`: Sorts users based on camera name, values ​​can be ASC or DESC.
+      - `:only_user_id`: Returns only user IDs, default is false.
+      - `:with_cameras`: Returns users and their active cameras, default is false.
+
+  ## Returns
+    - A list of `%User{}` structs if pagination is not enabled.
+    - A map containing `:meta` and `:data` if pagination is enabled.
+
+  ## Example
+
+      iex> OctosChallenge.Users.Query.get_all_users([camera_brand: "Hikvision"])
+      [%User{}, %User{}, ...]
+
+      iex> OctosChallenge.Users.Query.get_all_users([camera_brand: "Hikvision"], paginate: true)
+      %{meta: %{total_pages: 2, page: 1, total: 21, per_page: 15}, data: [%User{}, %User{}, ...]}
+
+      iex> OctosChallenge.Users.Query.get_all_users([only_user_id: true])
+      [%{user_id: 1}, %{user_id: 2}, ...]
+  """
+
+  @spec get_all_users(params :: Access.t()) :: [User.t() | map()] | result()
   def get_all_users(params \\ %{}) do
     {pagination, params} = handle_params(params)
 
@@ -33,6 +61,34 @@ defmodule OctosChallenge.UserService do
     end
   end
 
+  @doc """
+  Retrieves a user by their ID.
+
+  ## Params
+    - `user_id`: The ID of the user to retrieve.
+
+  ## Returns
+    - `{:ok, %User{}}` if the user is found.
+    - `{:error, :user_not_found}` if the user does not exist.
+
+  ## Example
+
+      iex> OctosChallenge.Users.Query.get_user(1)
+      {:ok, %User{name: "John", email: "john@example.com"}}
+
+      iex> OctosChallenge.Users.Query.get_user(999)
+      {:error, :user_not_found}
+  """
+  @spec get_user(user_id :: integer()) :: {:ok, User.t()} | {:error, :user_not_found}
+  def get_user(user_id) do
+    User
+    |> Repo.get(user_id)
+    |> case do
+      nil -> {:error, :user_not_found}
+      user -> {:ok, user}
+    end
+  end
+
   defp handle_params(params) do
     params_keys = ~w(
       paginate
@@ -41,6 +97,8 @@ defmodule OctosChallenge.UserService do
       camera_name
       camera_brand
       order_by
+      only_user_id
+      with_cameras
     )a
 
     params_keys
@@ -90,12 +148,15 @@ defmodule OctosChallenge.UserService do
       as: :u,
       left_join: c in assoc(u, :cameras),
       on: c.is_active == true,
-      as: :c,
-      preload: [cameras: c]
+      as: :c
   end
 
   defp apply_query_params(queryable, params) when is_map(params) do
     Enum.reduce(params, queryable, &apply_query_params(&2, &1))
+  end
+
+  defp apply_query_params(queryable, {:with_cameras, true}) do
+    preload(queryable, [c: c], cameras: c)
   end
 
   defp apply_query_params(queryable, {:camera_name, camera_name}) do
@@ -117,6 +178,10 @@ defmodule OctosChallenge.UserService do
 
   defp apply_query_params(queryable, {:offset, offset}) do
     offset(queryable, ^offset)
+  end
+
+  defp apply_query_params(queryable, {:only_user_id, true}) do
+    select(queryable, [u: u], %{user_id: u.id})
   end
 
   defp apply_query_params(queryable, _params), do: queryable
@@ -143,60 +208,5 @@ defmodule OctosChallenge.UserService do
       },
       data: result
     }
-  end
-
-  @spec create_user(params :: map()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
-  def create_user(params) do
-    params
-    |> User.changeset()
-    |> Repo.insert()
-  end
-
-  @spec create_many_users(list_params :: [map()], with_cameras :: boolean()) :: :ok
-  def create_many_users(list_params, with_cameras)
-
-  def create_many_users(list_params, false = _with_cameras) do
-    do_create_many_users(list_params)
-  end
-
-  def create_many_users(list_params, true = _with_cameras) do
-    {users, cameras} =
-      Enum.reduce(list_params, {[], %{}}, fn user, {users, cameras} ->
-        {
-          [Map.delete(user, :cameras)] ++ users,
-          Map.update(cameras, user.name, %{name: user.name, cameras: user.cameras}, fn old ->
-            Map.put(old, :cameras, old.cameras ++ user.cameras)
-          end)
-        }
-      end)
-
-    Repo.transaction(fn ->
-      do_create_many_users(users)
-
-      user_names = Map.keys(cameras)
-
-      created_users =
-        from(u in User, where: u.name in ^user_names, select: {u.name, u.id})
-        |> Repo.all()
-
-      Enum.reduce(created_users, [], fn {user_name, user_id}, acc ->
-        all_cameras_with_user_ids =
-          cameras
-          |> Map.get(user_name)
-          |> Map.get(:cameras)
-          |> Enum.map(&Map.put(&1, :user_id, user_id))
-
-        all_cameras_with_user_ids ++ acc
-      end)
-      |> then(&Repo.insert_all(Camera, &1))
-    end)
-
-    :ok
-  end
-
-  defp do_create_many_users(list_params) do
-    Repo.insert_all(User, list_params)
-
-    :ok
   end
 end

@@ -1,8 +1,8 @@
-defmodule OctosChallenge.Models.Camera do
+defmodule OctosChallenge.Users.Camera do
   @moduledoc false
   use Ecto.Schema
 
-  alias OctosChallenge.Models.User
+  alias OctosChallenge.Users.User
   import Ecto.Changeset
 
   @type t :: %__MODULE__{}
