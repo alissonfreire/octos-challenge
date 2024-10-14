@@ -3,7 +3,7 @@ defmodule OctosChallenge.Factory do
 
   use ExMachina.Ecto, repo: OctosChallenge.Repo
 
-  alias OctosChallenge.Models.{Camera, User}
+  alias OctosChallenge.Users.{Camera, User}
 
   @brand_names ~w(
     Intelbras

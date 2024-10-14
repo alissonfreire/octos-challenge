@@ -1,9 +1,9 @@
 defmodule OctosChallenge.Seeder do
   @moduledoc """
-  Module responsible for populating the database, specifically the `users` and `cameras` tables.
+  Module responsible for populating the database with random users and cameras.
   """
 
-  alias OctosChallenge.UserService
+  alias OctosChallenge.Users
 
   @user_names ~w(Pedro Tiago João André Felipe Mateus Tomé Bartolomeu Judas Simão Zelote Tadeu)
   @brand_names ~w(Intelbras Hikvision Giga Vivotek Positivo TP-Link)
@@ -11,6 +11,18 @@ defmodule OctosChallenge.Seeder do
   @chunk_size 50
   @magic_number 13
 
+  @doc """
+  Seeds the database by creating random users.
+
+  ## Options
+    - `:max_users`: Maximum number of users to seed (default: 1000).
+
+  ## Example
+
+      iex> OctosChallenge.Seeder.seed()
+      :ok
+  """
+  @spec seed(opts :: keyword()) :: :ok
   def seed(opts \\ []) do
     max_users = Keyword.get(opts, :max_users, 1000)
 
@@ -18,7 +30,7 @@ defmodule OctosChallenge.Seeder do
     |> Task.async_stream(&build_user_params/1)
     |> Stream.map(fn {:ok, param} -> param end)
     |> Stream.chunk_every(@chunk_size)
-    |> Stream.each(&UserService.create_many_users(&1, true))
+    |> Stream.each(&Users.create_many_users(&1, true))
     |> Stream.run()
   end
 
